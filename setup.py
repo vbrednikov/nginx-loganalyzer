@@ -24,7 +24,7 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='op1-loganalyzer',
+    name='nginx-loganalyzer',
     version='0.1.28',
     license='BSD 2-Clause License',
     description='access log statistics generator',
@@ -34,7 +34,7 @@ setup(
     ),
     author='Vladimir Brednikov',
     author_email='vbrednikov@gmail.com',
-    url='https://github.com/vbrednikov/op1-loganalyzer',
+    url='https://github.com/vbrednikov/nginx-loganalyzer',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
@@ -76,7 +76,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'op1-loganalyzer = op1_loganalyzer.cli:main',
+            'nginx-loganalyzer = op1_loganalyzer.cli:main',
         ]
     },
 )

@@ -4,7 +4,7 @@ import datetime
 import gzip
 from collections import namedtuple
 
-from op1_loganalyzer.parser import UIShort
+from nginx_loganalyzer.parser import UIShort
 
 LogFileTuple = namedtuple('LogTuple', 'filename type date')
 # LogRecordTuple = namedtuple('LogRecordTuple', 'url', 'request_time')

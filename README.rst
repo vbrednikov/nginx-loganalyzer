@@ -18,37 +18,37 @@ Overview
 
 
 
-.. |travis| image:: https://travis-ci.org/vbrednikov/op1-loganalyzer.svg?branch=master
+.. |travis| image:: https://travis-ci.org/vbrednikov/nginx-loganalyzer.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/vbrednikov/op1-loganalyzer
+    :target: https://travis-ci.org/vbrednikov/nginx-loganalyzer
 
-.. |coveralls| image:: https://coveralls.io/repos/vbrednikov/op1-loganalyzer/badge.svg?branch=master&service=github
+.. |coveralls| image:: https://coveralls.io/repos/vbrednikov/nginx-loganalyzer/badge.svg?branch=master&service=github
     :alt: Coverage Status
-    :target: https://coveralls.io/r/vbrednikov/op1-loganalyzer
+    :target: https://coveralls.io/r/vbrednikov/nginx-loganalyzer
 
-.. |codecov| image:: https://codecov.io/github/vbrednikov/op1-loganalyzer/coverage.svg?branch=master
+.. |codecov| image:: https://codecov.io/github/vbrednikov/nginx-loganalyzer/coverage.svg?branch=master
     :alt: Coverage Status
-    :target: https://codecov.io/github/vbrednikov/op1-loganalyzer
+    :target: https://codecov.io/github/vbrednikov/nginx-loganalyzer
 
-.. |version| image:: https://img.shields.io/pypi/v/op1-loganalyzer.svg
+.. |version| image:: https://img.shields.io/pypi/v/nginx-loganalyzer.svg
     :alt: PyPI Package latest release
-    :target: https://pypi.org/project/op1-loganalyzer
+    :target: https://pypi.org/project/nginx-loganalyzer
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/vbrednikov/op1-loganalyzer/v0.1.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/vbrednikov/nginx-loganalyzer/v0.1.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/vbrednikov/op1-loganalyzer/compare/v0.1.0...master
+    :target: https://github.com/vbrednikov/nginx-loganalyzer/compare/v0.1.0...master
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/op1-loganalyzer.svg
+.. |wheel| image:: https://img.shields.io/pypi/wheel/nginx-loganalyzer.svg
     :alt: PyPI Wheel
-    :target: https://pypi.org/project/op1-loganalyzer
+    :target: https://pypi.org/project/nginx-loganalyzer
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/op1-loganalyzer.svg
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/nginx-loganalyzer.svg
     :alt: Supported versions
-    :target: https://pypi.org/project/op1-loganalyzer
+    :target: https://pypi.org/project/nginx-loganalyzer
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/op1-loganalyzer.svg
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/nginx-loganalyzer.svg
     :alt: Supported implementations
-    :target: https://pypi.org/project/op1-loganalyzer
+    :target: https://pypi.org/project/nginx-loganalyzer
 
 
 .. end-badges
@@ -62,7 +62,7 @@ Installation
 
 ::
 
-    pip install https://github.com/vbrednikov/op1-loganalyzer
+    pip install https://github.com/vbrednikov/nginx-loganalyzer
 
 Documentation
 =============
@@ -72,8 +72,8 @@ To use the project:
 
 .. code-block:: python
 
-    import op1_loganalyzer
-    op1_loganalyzer.longest()
+    import nginx_loganalyzer
+    nginx_loganalyzer.longest()
 
 
 Development

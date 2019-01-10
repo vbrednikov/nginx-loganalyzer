@@ -8,20 +8,20 @@ Why does this file exist, and why not put this in __main__?
   You might be tempted to import things from __main__ later, but that will cause
   problems: the code will get executed twice:
 
-  - When you run `python -mop1_loganalyzer` python will execute
+  - When you run `python -mnginx_loganalyzer` python will execute
     ``__main__.py`` as a script. That means there won't be any
-    ``op1_loganalyzer.__main__`` in ``sys.modules``.
+    ``nginx_loganalyzer.__main__`` in ``sys.modules``.
   - When you import __main__ it will get executed again (as a module) because
-    there's no ``op1_loganalyzer.__main__`` in ``sys.modules``.
+    there's no ``nginx_loganalyzer.__main__`` in ``sys.modules``.
 
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import argparse
 
-from op1_loganalyzer import logfinder
-from op1_loganalyzer import parse_log
-from op1_loganalyzer.config import Config
-from op1_loganalyzer.parser import UIShort
+from nginx_loganalyzer import logfinder
+from nginx_loganalyzer import parse_log
+from nginx_loganalyzer.config import Config
+from nginx_loganalyzer.parser import UIShort
 
 config = {
     "REPORT_SIZE": 1000,

@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 
-from op1_loganalyzer.cli import parse_args
+from nginx_loganalyzer.cli import parse_args
 
 
 class TestCmdLineArgs(unittest.TestCase):

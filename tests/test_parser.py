@@ -1,8 +1,8 @@
 import re
 import unittest
 
-from op1_loganalyzer.parser import LogReCollection
-from op1_loganalyzer.parser import UIShort
+from nginx_loganalyzer.parser import LogReCollection
+from nginx_loganalyzer.parser import UIShort
 
 
 class TestUIShort(unittest.TestCase):
