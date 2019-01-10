@@ -76,7 +76,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'nginx-loganalyzer = op1_loganalyzer.cli:main',
+            'nginx-loganalyzer = nginx_loganalyzer.cli:main',
         ]
     },
 )

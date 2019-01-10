@@ -58,7 +58,7 @@ def main(args=None):
 
     # ищем лог-файл для обработки
     log_tuple = logfinder(the_conf)
-    log_regexp = UIShort.compile(['request', 'request_time'])
+    log_regexp = UIShort().compile(['request', 'request_time'])
     parse_log(log_tuple, config, log_regexp)
 
     # парсим файл

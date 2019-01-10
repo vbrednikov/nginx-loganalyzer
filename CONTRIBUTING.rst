@@ -37,7 +37,7 @@ Development
 
 To set up `nginx-loganalyzer` for local development:
 
-1. Fork `nginx-loganalyzer <https://github.com/vbrednikov/op1-loganalyzer>`_
+1. Fork `nginx-loganalyzer <https://github.com/vbrednikov/nginx-loganalyzer>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
