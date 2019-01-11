@@ -19,16 +19,17 @@ Why does this file exist, and why not put this in __main__?
 import argparse
 
 from nginx_loganalyzer import logfinder
-from nginx_loganalyzer import parse_log
 from nginx_loganalyzer.config import Config
-from nginx_loganalyzer.parser import UIShort
+from timestat import LogTimeStat
+import decimal
+import json
 
 config = {
     "REPORT_SIZE": 1000,
     "REPORT_DIR": "./reports",
-    "LOG_DIR": "./log"
-}
+    "LOG_DIR": "./log",
 
+}
 
 def threshold_t(string):
     try:
@@ -54,11 +55,8 @@ def parse_args(args):
 def main(args=None):
     args = parse_args(args=args)
     the_conf = Config(config, args.config)
-    # дальше работаем с the_conf.report_size, the_conf.report_dir etc.
-
-    # ищем лог-файл для обработки
     log_tuple = logfinder(the_conf)
-    log_regexp = UIShort().compile(['request', 'request_time'])
-    parse_log(log_tuple, config, log_regexp)
+    parser = LogTimeStat(log_tuple, the_conf)
+    print json.dumps(parser.parse_log(),  parse_float=decimal.Decimal)
 
     # парсим файл

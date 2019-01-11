@@ -1,6 +1,5 @@
 import re
 
-
 class Config(object):
     def __init__(self, config, config_file=None):
         self.report_size = config['REPORT_SIZE']
