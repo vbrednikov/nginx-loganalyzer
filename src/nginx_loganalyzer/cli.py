@@ -17,13 +17,14 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import argparse
+# import decimal
+# import json
+from pprint import pprint
+
+from log_parse import LogReqtimeStat
 
 from nginx_loganalyzer import logfinder
 from nginx_loganalyzer.config import Config
-from log_parse import LogProc, LogReqtimeStat
-import decimal
-import json
-from pprint import pprint
 
 config = {
     "REPORT_SIZE": 1000,

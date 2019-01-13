@@ -1,20 +1,11 @@
-from decimal import Decimal
-import decimal
 import gzip
-import pprint
-from collections import namedtuple, defaultdict
+from collections import defaultdict
+from collections import namedtuple
+from decimal import Decimal
 
 import log_regexp
 
-
-def median(lst):
-    n = len(lst)
-    if n < 1:
-            return None
-    if n % 2 == 1:
-            return sorted(lst)[n//2]
-    else:
-            return sum(sorted(lst)[n//2-1:n//2+1])/Decimal(2.0)
+from nginx_loganalyzer import median
 
 
 def parse_line_regexp(line, regexp, fields):
@@ -26,14 +17,6 @@ def parse_line_regexp(line, regexp, fields):
     if m:
         return tuple(map(lambda x: m.group(x), fields))
     return None
-
-
-def coroutine(f):
-    def wrap(*args, **kwargs):
-        gen = f(*args, **kwargs)
-        gen.next()
-        return gen
-    return wrap
 
 
 class LogProc(object):
@@ -53,21 +36,16 @@ class LogProc(object):
         opener = gzip.open if self.log_tuple.type == 'gz' else open
         with opener(self.log_tuple.filename) as log:
             for line in log:
-                #print "lreadlines: %s" % line
                 parsed = yield(line)
-                # print "readlines got back parsed: %s" % parsed
                 self.total += 1
                 if parsed:
                     self.processed += 1
 
     def parse_log(self):
         log_gen = self.readlines()
-        #print log_gen
         line = log_gen.next()
         try:
             while True:
-
-                #print "zreadlines: %s" % line
                 result = self.parse_line(line)
                 line = log_gen.send(bool(result))
         except StopIteration:
