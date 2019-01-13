@@ -1,8 +1,8 @@
 import re
 import unittest
 
-from nginx_loganalyzer.parser import LogReCollection
-from nginx_loganalyzer.parser import UIShort
+from nginx_loganalyzer.log_regexp import LogReCollection
+from nginx_loganalyzer.log_regexp import UIShort
 
 
 class TestUIShort(unittest.TestCase):

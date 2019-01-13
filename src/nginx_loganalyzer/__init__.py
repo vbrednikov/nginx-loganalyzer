@@ -4,12 +4,12 @@ import datetime
 import gzip
 from collections import namedtuple
 
-from nginx_loganalyzer.parser import UIShort
+#from nginx_loganalyzer.log_regexp import UIShort
 
 LogFileTuple = namedtuple('LogTuple', 'filename type date')
 # LogRecordTuple = namedtuple('LogRecordTuple', 'url', 'request_time')
 
-log_regexp = UIShort().compile(['request', 'request_time'])
+#log_regexp = UIShort().compile(['request', 'request_time'])
 
 
 def logfinder(config):

@@ -20,9 +20,10 @@ import argparse
 
 from nginx_loganalyzer import logfinder
 from nginx_loganalyzer.config import Config
-from timestat import LogTimeStat
+from log_parse import LogProc, LogReqtimeStat
 import decimal
 import json
+from pprint import pprint
 
 config = {
     "REPORT_SIZE": 1000,
@@ -30,6 +31,7 @@ config = {
     "LOG_DIR": "./log",
 
 }
+
 
 def threshold_t(string):
     try:
@@ -56,7 +58,7 @@ def main(args=None):
     args = parse_args(args=args)
     the_conf = Config(config, args.config)
     log_tuple = logfinder(the_conf)
-    parser = LogTimeStat(log_tuple, the_conf)
-    print json.dumps(parser.parse_log(),  parse_float=decimal.Decimal)
+    log_parser = LogReqtimeStat(log_tuple, the_conf)
+    pprint(log_parser.parse_log())
 
     # парсим файл
