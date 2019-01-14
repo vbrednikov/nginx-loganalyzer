@@ -48,6 +48,9 @@ class TestLogReCollection(unittest.TestCase):
     def test_remote_addr(self):
         self.assertRegexpMatches('127.0.0.1', self.reglib.item('remote_addr'))
 
+    def test_fail_remote_addr(self):
+        self.assertNotRegexpMatches('127.0.259.1', self.reglib.item('remote_addr'))
+
     def test_x_realip(self):
         self.assertRegexpMatches('-', self.reglib.item('http_x_real_ip'))
 
