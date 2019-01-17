@@ -43,7 +43,7 @@ class LogProc(object):
 
     def parse_log(self, log_gen=None):
         if log_gen is None:
-            log_gen = self.readlines
+            log_gen = self.readlines()
         line = log_gen.next()
         try:
             while True:

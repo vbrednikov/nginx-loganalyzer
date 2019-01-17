@@ -1,17 +1,33 @@
 __version__ = '0.1.0'
 
 import datetime
+import os.path
+import re
 from collections import namedtuple
 from decimal import Decimal
 
 LogFileTuple = namedtuple('LogTuple', 'filename type date')
 
 
-def logfinder(config):
-    """Finds latest log matching config.log_re in config.log_dir
-       Returns named tuple filename, filetype (gz/plain), parsed date
-    """
-    return LogFileTuple('small', 'plain', datetime.time)
+def get_latest_filename(pattern, filenames, dir='.'):
+    """Returns tuple (filename, date, extension) for the latest filename from
+    filenames generator matching the pattern.  The pattern must contain named
+    groups "yyyy", "mm", "dd", "ext" in order to capture them"""
+    if pattern.__class__ != '_sre.SRE_Pattern':
+        pattern = re.compile(pattern)
+    max_filedate = None
+    max_file = None
+    for filename in filenames:
+        if filename is None:
+            continue
+        match = pattern.match(filename)
+        if not match:
+            continue
+        filedate = datetime.date(int(match.group('yyyy')), int(match.group('mm')), int(match.group('dd')))
+        if max_filedate is None or filedate > max_filedate:
+            max_filedate = filedate
+            max_file = LogFileTuple(os.path.join(dir, filename), match.group('ext'), filedate)
+    return max_file
 
 
 def median(lst):

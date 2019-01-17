@@ -17,13 +17,14 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import argparse
+import os
 # import decimal
 # import json
 from pprint import pprint
 
 from log_parse import LogReqtimeStat
 
-from nginx_loganalyzer import logfinder
+from nginx_loganalyzer import get_latest_filename
 from nginx_loganalyzer.config import Config
 
 config = {
@@ -58,8 +59,12 @@ def parse_args(args):
 def main(args=None):
     args = parse_args(args=args)
     the_conf = Config(config, args.config)
-    log_tuple = logfinder(the_conf)
-    log_parser = LogReqtimeStat(log_tuple, the_conf)
-    pprint(log_parser.parse_log())
 
-    # парсим файл
+    logfile_pattern = r'nginx-access-ui.log-' + \
+                      r'(?P<yyyy>\d\d\d\d)(?P<mm>\d\d)(?P<dd>\d\d)' + \
+                      r'(?P<ext>\.gz)?'
+    files = (f for f in os.listdir(the_conf.log_dir))
+    latest_tuple = get_latest_filename(logfile_pattern, files, the_conf.log_dir)
+    log_parser = LogReqtimeStat(latest_tuple, the_conf)
+
+    pprint(log_parser.parse_log())
