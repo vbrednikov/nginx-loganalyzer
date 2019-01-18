@@ -18,7 +18,9 @@ Why does this file exist, and why not put this in __main__?
 """
 import argparse
 import ConfigParser
+import logging
 import os
+import sys
 # import decimal
 # import json
 from pprint import pprint
@@ -31,6 +33,7 @@ config = {
     "REPORT_SIZE": '1000',
     "REPORT_DIR": "./reports",
     "LOG_DIR": "./log",
+    "ANALYZER_LOG_FILE": None,
 }
 
 
@@ -73,20 +76,33 @@ class ConfigDict(dict):
 
 
 def main(args=None):
-    args = parse_args(args=args, default_config='~/.analyzer.cfg')
-    c = ConfigParser.ConfigParser(config)
-    section = 'DEFAULT'
-    if args.config:
-        c.readfp(args.config)
-        section = c.sections()[0]
-    the_conf = ConfigDict(c.items(section))
+    logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
+                        datefmt='%Y.%m.%d %H:%M:%S',
+                        level=logging.INFO)
+    try:
+        args = parse_args(args=args, default_config='~/.analyzer.cfg')
+        c = ConfigParser.ConfigParser(config)
+        section = 'DEFAULT'
+        if args.config:
+            c.readfp(args.config)
+            section = c.sections()[0]
+            args.config.close()
+        the_conf = ConfigDict(c.items(section))
+        logging.info('%s launched in %s with config file %s' %
+                     (sys.argv[0], os.getcwd(), args.config.name,))
+        logging.info('parsed configuration from file %s: %s' %
+                     (args.config.name, the_conf))
+        logfile_pattern = r'nginx-access-ui.log-' + \
+                          r'(?P<yyyy>\d\d\d\d)(?P<mm>\d\d)(?P<dd>\d\d)' + \
+                          r'(?P<ext>\.gz)?'
 
-    logfile_pattern = r'nginx-access-ui.log-' + \
-                      r'(?P<yyyy>\d\d\d\d)(?P<mm>\d\d)(?P<dd>\d\d)' + \
-                      r'(?P<ext>\.gz)?'
+        files = (f for f in os.listdir(the_conf.log_dir))
+        latest_tuple = get_latest_filename(logfile_pattern, files, the_conf.log_dir)
+        logging.info('Parsing file %s' % latest_tuple.filename)
 
-    files = (f for f in os.listdir(the_conf.log_dir))
-    latest_tuple = get_latest_filename(logfile_pattern, files, the_conf.log_dir)
-    log_parser = LogReqtimeStat(latest_tuple, the_conf)
+        log_parser = LogReqtimeStat(latest_tuple, the_conf)
 
-    pprint(log_parser.parse_log())
+        pprint(log_parser.parse_log())
+    except Exception:
+        logging.exception('Exception raised')
+        raise
