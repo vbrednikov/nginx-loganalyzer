@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 import datetime
+import os
 import re
+import shutil
+import tempfile
 import unittest
 
 from nginx_loganalyzer import LogFileTuple
 from nginx_loganalyzer import get_latest_filename
+from nginx_loganalyzer import setup_reports
 
 
 class TestReaddir(unittest.TestCase):
@@ -49,6 +53,25 @@ class TestReaddir(unittest.TestCase):
             ])
         self.assertEqual(get_latest_filename(self.pattern, files),
                          LogFileTuple('./bbb.0103-2002.gz', '.gz', datetime.date(2002, 1, 3)))
+
+
+class TestSetupReports(unittest.TestCase):
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_existing_reports_dir(self):
+        rep_dir_name = os.path.join(self.tmp_dir, 'reports')
+        os.mkdir(rep_dir_name)
+        self.assertTrue(setup_reports(rep_dir_name))
+        self.assertTrue(os.path.exists(os.path.join(rep_dir_name, 'jquery.tablesorter.min.js')))
+
+    def test_new_reports_dir(self):
+        rep_dir_name = os.path.join(self.tmp_dir, 'reports')
+        self.assertTrue(setup_reports(rep_dir_name))
+        self.assertTrue(os.path.exists(os.path.join(rep_dir_name, 'jquery.tablesorter.min.js')))
 
 
 if __name__ == '__main__':
