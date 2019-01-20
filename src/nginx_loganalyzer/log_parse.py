@@ -1,4 +1,5 @@
 import gzip
+import logging
 from collections import defaultdict
 from collections import namedtuple
 from decimal import Decimal
@@ -34,6 +35,7 @@ class LogProc(object):
         """Opens and parses log described by namedtuple('LogTuple',
            'filename type date')"""
         opener = gzip.open if self.log_tuple.type == 'gz' else open
+        logging.info('readlines() for %s opened with %s' % (self.log_tuple.filename, opener))
         with opener(self.log_tuple.filename) as log:
             for line in log:
                 parsed = yield(line)
@@ -42,6 +44,7 @@ class LogProc(object):
                     self.processed += 1
 
     def parse_log(self, log_gen=None):
+        logging.info('Starting parsing ')
         if log_gen is None:
             log_gen = self.readlines()
         line = log_gen.next()
@@ -65,11 +68,14 @@ class LogReqtimeStat(LogProc):
         self.total_time = 0
         self.total_count = 0
         self.raw_data = defaultdict(list)
+        self.threshold = 70
+        if hasattr(self.config, 'threshold'):
+            self.threshold = config.threshold
 
     def parse_line(self, line):
         res = parse_line_regexp(line, self.log_regexp, self.fields)
         if not res:
-            # todo: logging here
+            logging.info("Could not parse line: %s" % line.strip())
             return None
         request_time = Decimal(res[1])
         self.total_time += request_time
@@ -97,20 +103,30 @@ class LogReqtimeStat(LogProc):
 
     def parse_log(self, *args, **kwargs):
         super(LogReqtimeStat, self).parse_log(*args, **kwargs)
+        processed_percent = 100*(float(self.processed) / self.total)
+        if processed_percent < self.threshold:
+            logging.error("Parsed %s lines of %s (%s%%), but threshold is %s%%" %
+                          (self.processed,
+                           self.total,
+                           round(processed_percent, 2),
+                           self.threshold))
+            return None
+        logging.info("Parsed %s of total %s (%s%%) in %s" %
+                     (self.processed, self.total, round(processed_percent, 2), self.log_tuple.filename))
+
         stat = []
-        processed = 0
+        print self.config.report_size
         for url, url_data in sorted(self.stat_data.items(),
                                     key=lambda kv: kv[1]['time_sum'],
                                     reverse=True):
-            processed += 1
             url_data.update({
-                'count_perc': 100 * Decimal(url_data['count'])/self.total_count,
-                'time_perc': 100 * Decimal(url_data['time_sum'])/self.total_time,
-                'time_med': median(self.raw_data[url]),
-                'time_avg': url_data['time_sum']/url_data['count'],
+                'count_perc': round(100 * Decimal(url_data['count'])/self.total_count, 2),
+                'time_perc': round(100 * Decimal(url_data['time_sum'])/self.total_time),
+                'time_med': round(median(self.raw_data[url]), 2),
+                'time_avg': round(url_data['time_sum']/url_data['count'], 2)
                 })
             stat.append(url_data)
-            if processed >= self.config.report_size:
+            if len(stat) >= int(self.config.report_size):
                 break
-        print "Total: %s, processed: %s" % (self.total, self.processed)
+
         return stat
