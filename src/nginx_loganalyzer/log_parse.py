@@ -70,7 +70,7 @@ class LogReqtimeStat(LogProc):
         self.raw_data = defaultdict(list)
         self.threshold = 70
         if hasattr(self.config, 'threshold'):
-            self.threshold = config.threshold
+            self.threshold = int(config.threshold)
 
     def parse_line(self, line):
         res = parse_line_regexp(line, self.log_regexp, self.fields)

@@ -62,8 +62,8 @@ def setup_reports(report_dir):
     if not os.path.isdir(report_dir):
         logging.info('creating report dir %s' % report_dir)
         os.makedirs(report_dir)
-        tablesorter_js = os.path.join(os.path.dirname(__file__), "jquery.tablesorter.min.js")
     if not os.path.exists(os.path.join(report_dir, 'jquery.tablesorter.min.js')):
+        tablesorter_js = os.path.join(os.path.dirname(__file__), "jquery.tablesorter.min.js")
         shutil.copy(tablesorter_js, report_dir)
     return True
 

@@ -36,6 +36,7 @@ config = {
     "REPORT_DIR": "./reports",
     "LOG_DIR": "./log",
     "ANALYZER_LOG_FILE": None,
+    "threshold": '75',
 }
 
 
@@ -98,8 +99,12 @@ def main(args=None):
         # get files list
         files = (f for f in os.listdir(the_conf.log_dir))
 
-        # get latest file to parse
+        # get latest file to parse, exit with success if nothing found
         latest_tuple = get_latest_filename(logfile_name_pattern, files, the_conf.log_dir)
+        if latest_tuple is None:
+            logging.info("No suitable log to parse found in %s" % the_conf.log_dir)
+            sys.exit(0)
+
         logging.info('Got the file %s' % latest_tuple.filename)
 
         # create reports dir
