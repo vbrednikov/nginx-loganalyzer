@@ -4,9 +4,12 @@ Overview
 
 .. start-badges
 
-[![Build Status](https://travis-ci.org/vbrednikov/nginx-loganalyzer.svg?branch=master)](https://travis-ci.org/vbrednikov/nginx-loganalyzer)
+.. image:: https://travis-ci.org/vbrednikov/nginx-loganalyzer.svg?branch=master
+    :target: https://travis-ci.org/vbrednikov/nginx-loganalyzer
 
-[![Coverage Status](https://coveralls.io/repos/github/vbrednikov/nginx-loganalyzer/badge.svg?branch=master)](https://coveralls.io/github/vbrednikov/nginx-loganalyzer?branch=master)
+.. image:: https://coveralls.io/repos/github/vbrednikov/nginx-loganalyzer/badge.svg?branch=master
+    :target: https://coveralls.io/github/vbrednikov/nginx-loganalyzer?branch=master
+
 
 .. end-badges
 
