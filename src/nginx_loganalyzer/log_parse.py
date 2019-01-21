@@ -13,7 +13,6 @@ def parse_line_regexp(line, regexp, fields):
     """Given with regexp containing named capture groups, check the line
     against the regexp and return matches in the order specified by
     the "fields" argument (must be a list or tuple)"""
-
     m = regexp.match(line)
     if m:
         return tuple(map(lambda x: m.group(x), fields))
@@ -38,15 +37,13 @@ class LogProc(object):
         logging.info('readlines() for %s opened with %s' % (self.log_tuple.filename, opener))
         with opener(self.log_tuple.filename) as log:
             for line in log:
-                parsed = yield(line)
-                self.total += 1
-                if parsed:
-                    self.processed += 1
+                yield(line)
 
     def parse_log(self, log_gen=None):
-        logging.info('Starting parsing ')
+        logging.info('Enter parse_log')
         if log_gen is None:
             log_gen = self.readlines()
+        logging.info("Using log_gen: %s" % log_gen)
         line = log_gen.next()
         try:
             while True:
@@ -62,21 +59,26 @@ class LogReqtimeStat(LogProc):
 
     def __init__(self, log_tuple, config):
         super(LogReqtimeStat, self).__init__(log_tuple)
+        self.config = config
         self.log_regexp = log_regexp.UIShort().compile(self.fields)
         self.stat_data = defaultdict(dict)
-        self.config = config
+        self.raw_data = defaultdict(list)
         self.total_time = 0
         self.total_count = 0
-        self.raw_data = defaultdict(list)
         self.threshold = 70
         if hasattr(self.config, 'threshold'):
             self.threshold = int(config.threshold)
 
+    def set_regexp(self, log_regexp):
+        self.log_regexp = log_regexp
+
     def parse_line(self, line):
         res = parse_line_regexp(line, self.log_regexp, self.fields)
+        self.total += 1
         if not res:
             logging.info("Could not parse line: %s" % line.strip())
             return None
+        self.processed += 1
         request_time = Decimal(res[1])
         self.total_time += request_time
         self.total_count += 1
@@ -115,13 +117,12 @@ class LogReqtimeStat(LogProc):
                      (self.processed, self.total, round(processed_percent, 2), self.log_tuple.filename))
 
         stat = []
-        print self.config.report_size
         for url, url_data in sorted(self.stat_data.items(),
                                     key=lambda kv: kv[1]['time_sum'],
                                     reverse=True):
             url_data.update({
                 'count_perc': round(100 * Decimal(url_data['count'])/self.total_count, 2),
-                'time_perc': round(100 * Decimal(url_data['time_sum'])/self.total_time),
+                'time_perc': round(100 * Decimal(url_data['time_sum'])/self.total_time, 2),
                 'time_med': round(median(self.raw_data[url]), 2),
                 'time_avg': round(url_data['time_sum']/url_data['count'], 2)
                 })
