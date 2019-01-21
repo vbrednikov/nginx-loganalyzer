@@ -69,7 +69,7 @@ def main(args=None):
         # setup some variables
         logfile_name_pattern = r'nginx-access-ui.log-' + \
                           r'(?P<yyyy>\d\d\d\d)(?P<mm>\d\d)(?P<dd>\d\d)' + \
-                          r'(?P<ext>\.gz)?'
+                          r'(?P<ext>\.gz)?$'
 
         template_file = os.path.join(os.path.dirname(__file__), "report.html")
 
