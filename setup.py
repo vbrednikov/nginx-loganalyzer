@@ -25,7 +25,7 @@ def read(*names, **kwargs):
 
 setup(
     name='nginx-loganalyzer',
-    version='0.1.45',
+    version='0.9.1',
     license='BSD 2-Clause License',
     description='access log statistics generator',
     long_description='%s\n%s' % (
