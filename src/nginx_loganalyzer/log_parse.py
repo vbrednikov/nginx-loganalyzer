@@ -44,8 +44,8 @@ class LogProc(object):
         if log_gen is None:
             log_gen = self.readlines()
         logging.info("Using log_gen: %s" % log_gen)
-        line = log_gen.next()
         try:
+            line = log_gen.next()
             while True:
                 result = self.parse_line(line)
                 line = log_gen.send(bool(result))
@@ -105,6 +105,9 @@ class LogReqtimeStat(LogProc):
 
     def parse_log(self, *args, **kwargs):
         super(LogReqtimeStat, self).parse_log(*args, **kwargs)
+        if self.total == 0:
+            logging.info("Total zero came from the file")
+            return []
         processed_percent = 100*(float(self.processed) / self.total)
         if processed_percent < self.threshold:
             logging.error("Parsed %s lines of %s (%s%%), but threshold is %s%%" %

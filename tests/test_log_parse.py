@@ -163,6 +163,13 @@ class TestLogReqTimeStat(unittest.TestCase):
         self.assertEqual(self.parser.total, 10)
         self.assertEqual(self.parser.processed, 5)
 
+    def test_zero_stat(self):
+        # check that stats are calculated correctly
+        gen = (r for r in [])
+        self.assertEqual(self.parser.parse_log(log_gen=gen), [])
+        self.assertEqual(self.parser.total, 0)
+        self.assertEqual(self.parser.processed, 0)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
