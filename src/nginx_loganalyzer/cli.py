@@ -40,53 +40,50 @@ config = {
 }
 
 
-def threshold_t(string):
-    try:
-        value = int(string)
-    except ValueError:
-        raise argparse.ArgumentTypeError('must be an integer')
-    if (value < 0) or (value > 100):
-        raise argparse.ArgumentTypeError('must be between 0 and 100')
-    return value
-
-
 def parse_args(args, default_config=None):
     parser = argparse.ArgumentParser(description='Find nginx log file,'
                                      ' parse it and produce the html report.')
     parser.add_argument('--config', default=default_config,
                         type=argparse.FileType('r'),
                         help="Path to the config file")
-    parser.add_argument('--err-threshold', dest='threshold', default=66,
-                        type=threshold_t, help="Parsing error threshold")
     return parser.parse_args(args)
 
 
 def main(args=None):
+    # setup some variables
+    logfile_name_pattern = r'nginx-access-ui.log-' + \
+                           r'(?P<yyyy>\d\d\d\d)(?P<mm>\d\d)(?P<dd>\d\d)' + \
+                           r'(?P<ext>\.gz)?$'
+
+    template_file = os.path.join(os.path.dirname(__file__), "report.html")
+
+    # parse commandline args
+    args = parse_args(args=args, default_config='~/.analyzer.cfg')
+
+    # parse and merge config file
+    c = ConfigParser.ConfigParser(config)
+    section = 'DEFAULT'
+    if args.config:
+        c.readfp(args.config)
+        section = c.sections()[0]
+        args.config.close()
+    the_conf = ConfigDict(c.items(section))
     logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
                         datefmt='%Y.%m.%d %H:%M:%S',
-                        level=logging.INFO)
+                        level=logging.INFO,
+                        filename=the_conf.analyzer_log_file)
+
     try:
-        # setup some variables
-        logfile_name_pattern = r'nginx-access-ui.log-' + \
-                          r'(?P<yyyy>\d\d\d\d)(?P<mm>\d\d)(?P<dd>\d\d)' + \
-                          r'(?P<ext>\.gz)?$'
-
-        template_file = os.path.join(os.path.dirname(__file__), "report.html")
-
-        # parse commandline args
-        args = parse_args(args=args, default_config='~/.analyzer.cfg')
-
-        # parse and merge config file
-        c = ConfigParser.ConfigParser(config)
-        section = 'DEFAULT'
-        if args.config:
-            c.readfp(args.config)
-            section = c.sections()[0]
-            args.config.close()
-        the_conf = ConfigDict(c.items(section))
-
         # validate report_size parameter in the config
         if not re.match(r'^\d+$', the_conf.report_size):
+            logging.error("Wrong format for report_size in %s: %s" %
+                          (os.path.abspath(args.config.name), the_conf.report_size))
+            raise ValueError
+
+        # validate report_size parameter in the config
+        if not (
+                re.match(r'^\d+$', the_conf.threshold)
+                and int(the_conf.threshold) <= 100 or int(the_conf.threshold) > 0):
             logging.error("Wrong format for report_size in %s: %s" %
                           (os.path.abspath(args.config.name), the_conf.report_size))
             raise ValueError
@@ -139,6 +136,9 @@ def main(args=None):
         data = json.dumps(log_stat, default=str)
         render_report(template_file, data, report_file)
         logging.info('finished')
+    except KeyboardInterrupt:
+        logging.exception('KeyboardInterrupt')
+        raise
     except Exception:
         logging.exception('Exception raised')
         raise
