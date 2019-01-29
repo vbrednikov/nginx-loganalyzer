@@ -29,7 +29,7 @@ class ConfigDict(dict):
             raise AttributeError("No such attribute: " + name)
 
 
-def get_latest_filename(pattern, filenames, dir='.'):
+def get_latest_filename(pattern, filenames, log_dir='.'):
     """Returns tuple (filename, date, extension) for the latest filename from
     filenames generator matching the pattern.  The pattern must contain named
     groups "yyyy", "mm", "dd", "ext" in order to capture them"""
@@ -46,7 +46,7 @@ def get_latest_filename(pattern, filenames, dir='.'):
         filedate = datetime.date(int(match.group('yyyy')), int(match.group('mm')), int(match.group('dd')))
         if max_filedate is None or filedate > max_filedate:
             max_filedate = filedate
-            max_file = LogFileTuple(os.path.join(dir, filename), match.group('ext'), filedate)
+            max_file = LogFileTuple(os.path.join(log_dir, filename), match.group('ext'), filedate)
     return max_file
 
 
@@ -77,6 +77,6 @@ def median(lst):
     if n == 1:
         return Decimal(lst[0])
     if n % 2 == 1:
-        return Decimal(sorted(lst)[n//2])
+        return Decimal(sorted(lst)[n // 2])
     else:
-        return sum(sorted(lst)[n//2-1:n//2+1])/Decimal('2.0')
+        return sum(sorted(lst)[n // 2 - 1:n // 2 + 1]) / Decimal('2.0')

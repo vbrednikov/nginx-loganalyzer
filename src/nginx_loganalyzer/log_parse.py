@@ -108,7 +108,7 @@ class LogReqtimeStat(LogProc):
         if self.total == 0:
             logging.info("Total zero came from the file")
             return []
-        processed_percent = 100*(float(self.processed) / self.total)
+        processed_percent = 100 * (float(self.processed) / self.total)
         if processed_percent < self.threshold:
             logging.error("Parsed %s lines of %s (%s%%), but threshold is %s%%" %
                           (self.processed,
@@ -124,11 +124,11 @@ class LogReqtimeStat(LogProc):
                                     key=lambda kv: kv[1]['time_sum'],
                                     reverse=True):
             url_data.update({
-                'count_perc': round(100 * Decimal(url_data['count'])/self.total_count, 2),
-                'time_perc': round(100 * Decimal(url_data['time_sum'])/self.total_time, 2),
+                'count_perc': round(100 * Decimal(url_data['count']) / self.total_count, 2),
+                'time_perc': round(100 * Decimal(url_data['time_sum']) / self.total_time, 2),
                 'time_med': round(median(self.raw_data[url]), 2),
-                'time_avg': round(url_data['time_sum']/url_data['count'], 2)
-                })
+                'time_avg': round(url_data['time_sum'] / url_data['count'], 2)
+            })
             stat.append(url_data)
             if len(stat) >= int(self.config.report_size):
                 break

@@ -81,9 +81,9 @@ def main(args=None):
             raise ValueError
 
         # validate report_size parameter in the config
-        if not (
-                re.match(r'^\d+$', the_conf.threshold)
-                and int(the_conf.threshold) <= 100 or int(the_conf.threshold) > 0):
+        if not (re.match(r'^\d+$', the_conf.threshold)
+                and int(the_conf.threshold) <= 100
+                or int(the_conf.threshold) > 0):
             logging.error("Wrong format for report_size in %s: %s" %
                           (os.path.abspath(args.config.name), the_conf.report_size))
             raise ValueError
