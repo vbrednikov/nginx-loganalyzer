@@ -66,8 +66,8 @@ class LogReqtimeStat(LogProc):
         self.total_time = 0
         self.total_count = 0
         self.threshold = 70
-        if hasattr(self.config, 'threshold'):
-            self.threshold = int(config.threshold)
+        if 'threshold' in self.config:
+            self.threshold = int(config['threshold'])
 
     def set_regexp(self, log_regexp):
         self.log_regexp = log_regexp
@@ -130,7 +130,7 @@ class LogReqtimeStat(LogProc):
                 'time_avg': round(url_data['time_sum'] / url_data['count'], 2)
             })
             stat.append(url_data)
-            if len(stat) >= int(self.config.report_size):
+            if len(stat) >= int(self.config['report_size']):
                 break
 
         return stat

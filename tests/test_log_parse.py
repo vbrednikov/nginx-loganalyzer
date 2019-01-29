@@ -5,7 +5,6 @@ import re
 import unittest
 from decimal import Decimal
 
-from nginx_loganalyzer import ConfigDict
 from nginx_loganalyzer import LogFileTuple
 from nginx_loganalyzer.log_parse import LogProc
 from nginx_loganalyzer.log_parse import LogReqtimeStat
@@ -74,10 +73,9 @@ class TestLogReqTimeStat(unittest.TestCase):
 
     def setUp(self):
         log_tuple = LogFileTuple('test', 'plain', datetime.date.today())
-        config = ConfigDict([
-                            ('threshold', 55),
-                            ('report_size', 5),
-                            ])
+        config = dict([('threshold', 55),
+                       ('report_size', 5),
+                       ])
         self.parser = LogReqtimeStat(log_tuple, config)
         self.parser.set_regexp(re.compile(r'^(?P<request>\S+)\s+(?P<request_time>\d+\.\d+)$'))
 

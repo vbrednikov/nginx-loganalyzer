@@ -12,21 +12,22 @@ from string import Template
 LogFileTuple = namedtuple('LogTuple', 'filename type date')
 
 
-class ConfigDict(dict):
-    def __getattr__(self, name):
-        if name in self:
-            return self[name]
-        else:
-            raise AttributeError("No such attribute: " + name)
+def config_validate(config):
+    # validate report_size parameter in the config
+    if 'report_size' in config and not re.match(r'^\d+$', str(config['report_size'])):
+        msg = "report_size: an int greater than zero expected, got %s" % config['report_size']
+        logging.error(msg)
+        raise ValueError(msg)
 
-    def __setattr__(self, name, value):
-        self[name] = value
-
-    def __delattr__(self, name):
-        if name in self:
-            del self[name]
-        else:
-            raise AttributeError("No such attribute: " + name)
+    # validate report_size parameter in the config
+    if 'threshold' in config:
+        if not re.match(r'^\d+$', str(config['threshold'])) \
+            or int(config['threshold']) > 100 \
+                or int(config['threshold']) == 0:
+            msg = "threshold: an integer between 0 and 100 expected, got: %s" % config['threshold']
+            logging.error(msg)
+            raise ValueError(msg)
+    return True
 
 
 def get_latest_filename(pattern, filenames, log_dir='.'):

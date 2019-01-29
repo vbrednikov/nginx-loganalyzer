@@ -1,15 +1,27 @@
 #!/usr/bin/env python
 import datetime
+import functools
 import os
 import re
 import shutil
 import tempfile
 import unittest
 
-from nginx_loganalyzer import ConfigDict
 from nginx_loganalyzer import LogFileTuple
+from nginx_loganalyzer import config_validate
 from nginx_loganalyzer import get_latest_filename
 from nginx_loganalyzer import setup_reports
+
+
+def cases(cases):
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args):
+            for c in cases:
+                new_args = args + (c if isinstance(c, tuple) else (c,))
+                f(*new_args)
+        return wrapper
+    return decorator
 
 
 class TestReaddir(unittest.TestCase):
@@ -78,43 +90,34 @@ class TestLogFileTuple(unittest.TestCase):
         self.assertEqual(lft.date.strftime('%m/%d/%Y'), '12/31/2017')
 
 
-class TestConfigDict(unittest.TestCase):
-    def setUp(self):
-        self.config = ConfigDict({'a': 2, 'b': 3, 'd': 4, 'e': 9})
+class TestConfigDictValidate(unittest.TestCase):
 
-    def tearDown(self):
-        del(self.config)
+    @cases([{'report_size': -1},
+            {'report_size': '10.5'},
+            {'report_size': 'abc'},
+            {'threshold': 'abc'},
+            {'threshold': 0.1},
+            {'threshold': 50.5},
+            {'threshold': 101},
+            ])
+    def test_config_validate_fails(self, config):
+        with self.assertRaises(ValueError):
+            config_validate(config)
 
-    def test_access_attr(self):
-        self.assertEqual(self.config.a, 2)
-
-    def test_access_non_existing_attr(self):
-        with self.assertRaises(AttributeError):
-            self.config.x
-
-    def test_access_key(self):
-        self.assertEqual(self.config['a'], 2)
-
-    def test_update_attr(self):
-        self.config.b = 5
-        self.assertEqual(self.config.b, 5)
-
-    def test_update_key(self):
-        self.config['d'] = 8
-        self.assertEqual(self.config.d, 8)
-
-    def test_delete_key(self):
-        del(self.config['e'])
-        self.assertFalse(hasattr(self.config, 'e'))
-
-    def test_delete_attr(self):
-        del(self.config.e)
-        self.assertFalse(hasattr(self.config, 'e'))
-
-    def test_delete_non_existing_attr(self):
-        with self.assertRaises(AttributeError):
-            del(self.config.y)
+    @cases([{'report_size': 0},
+            {'report_size': '1000'},
+            {'report_size': '50'},
+            {'report_size': 10},
+            {'threshold': 1},
+            {'threshold': 50},
+            {'threshold': '70'},
+            {'threshold': '100'},
+            ])
+    def test_config_validate_ok(self, config):
+        self.assertTrue(config_validate(config))
 
 
 if __name__ == '__main__':
+    import logging
+    logging.basicConfig(level=logging.INFO)
     unittest.main()
