@@ -31,7 +31,7 @@ from nginx_loganalyzer import get_latest_filename
 from nginx_loganalyzer import render_report
 from nginx_loganalyzer import setup_reports
 
-config = {
+default_config = {
     "REPORT_SIZE": '1000',
     "REPORT_DIR": "./reports",
     "LOG_DIR": "./log",
@@ -61,54 +61,54 @@ def main(args=None):
     args = parse_args(args=args, default_config='~/.analyzer.cfg')
 
     # parse and merge config file
-    c = ConfigParser.ConfigParser(config)
+    c = ConfigParser.ConfigParser(default_config)
     section = 'DEFAULT'
     if args.config:
         c.readfp(args.config)
         section = c.sections()[0]
         args.config.close()
-    the_conf = ConfigDict(c.items(section))
+    config = ConfigDict(c.items(section))
     logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
                         datefmt='%Y.%m.%d %H:%M:%S',
                         level=logging.INFO,
-                        filename=the_conf.analyzer_log_file)
+                        filename=config.analyzer_log_file)
 
     try:
         # validate report_size parameter in the config
-        if not re.match(r'^\d+$', the_conf.report_size):
+        if not re.match(r'^\d+$', config.report_size):
             logging.error("Wrong format for report_size in %s: %s" %
-                          (os.path.abspath(args.config.name), the_conf.report_size))
+                          (os.path.abspath(args.config.name), config.report_size))
             raise ValueError
 
         # validate report_size parameter in the config
-        if not (re.match(r'^\d+$', the_conf.threshold)
-                and int(the_conf.threshold) <= 100
-                or int(the_conf.threshold) > 0):
+        if not (re.match(r'^\d+$', config.threshold)
+                and int(config.threshold) <= 100
+                or int(config.threshold) > 0):
             logging.error("Wrong format for report_size in %s: %s" %
-                          (os.path.abspath(args.config.name), the_conf.report_size))
+                          (os.path.abspath(args.config.name), config.report_size))
             raise ValueError
 
         logging.info('%s launched in %s with config file %s' %
                      (sys.argv[0], os.getcwd(), args.config.name,))
         logging.info('parsed configuration from file %s: %s' %
-                     (args.config.name, the_conf))
+                     (args.config.name, config))
 
         # get files list
-        files = (f for f in os.listdir(the_conf.log_dir))
+        files = (f for f in os.listdir(config.log_dir))
 
         # get latest file to parse, exit with success if nothing found
-        latest_tuple = get_latest_filename(logfile_name_pattern, files, the_conf.log_dir)
+        latest_tuple = get_latest_filename(logfile_name_pattern, files, config.log_dir)
         if latest_tuple is None:
-            logging.info("No suitable log to parse found in %s" % the_conf.log_dir)
+            logging.info("No suitable log to parse found in %s" % config.log_dir)
             sys.exit(0)
 
         logging.info('Got the file %s' % latest_tuple.filename)
 
         # create reports dir
-        setup_reports(the_conf.report_dir)
+        setup_reports(config.report_dir)
 
         # get filename for the future report
-        report_file = os.path.join(the_conf.report_dir,
+        report_file = os.path.join(config.report_dir,
                                    latest_tuple.date.strftime('report-%Y.%m.%d.html'))
         logging.info('report file: %s' % report_file)
 
@@ -124,7 +124,7 @@ def main(args=None):
             sys.exit(1)
 
         # create and invoke log_parser instance
-        log_parser = LogReqtimeStat(latest_tuple, the_conf)
+        log_parser = LogReqtimeStat(latest_tuple, config)
         log_stat = log_parser.parse_log()
         if log_stat is None:
             logging.error('Unable to parse the log')
